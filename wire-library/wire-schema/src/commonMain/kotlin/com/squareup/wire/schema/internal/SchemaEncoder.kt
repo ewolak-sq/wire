@@ -144,11 +144,10 @@ class SchemaEncoder(
       }
 
       STRING.encodeWithTag(writer, 1, value.type.simpleName)
-      fieldEncoder.asRepeated().encodeWithTag(writer, 2, encodedFields)
 
-      for (encodedOneOf in encodedOneOfs) {
-        fieldEncoder.asRepeated().encodeWithTag(writer, 2, encodedOneOf.fields)
-      }
+      val fieldsAndOneOfFields = (encodedFields + encodedOneOfs.flatMap { it.fields })
+        .sortedBy { it.field.tag }
+      fieldEncoder.asRepeated().encodeWithTag(writer, 2, fieldsAndOneOfFields)
 
       // FieldDescriptorProto.ADAPTER.asRepeated().encodeWithTag(writer, 6, value.extension)
 
@@ -260,7 +259,7 @@ class SchemaEncoder(
       }
       STRING.encodeWithTag(writer, 2, value.extendee)
       STRING.encodeWithTag(writer, 7, value.field.default)
-      if (value.syntax == Syntax.PROTO_2 && value.field.jsonName != value.field.name) {
+      if (true) {
         STRING.encodeWithTag(writer, 10, value.field.jsonName)
       }
       fieldOptionsProtoAdapter.encodeWithTag(writer, 8, value.field.options.toJsonOptions())

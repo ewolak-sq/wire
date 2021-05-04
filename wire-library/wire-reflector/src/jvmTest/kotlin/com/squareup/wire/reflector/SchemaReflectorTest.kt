@@ -15,11 +15,14 @@
  */
 package com.squareup.wire.reflector
 
+import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.RepoBuilder
+import com.squareup.wire.schema.SchemaLoader
 import grpc.reflection.v1alpha.ListServiceResponse
 import grpc.reflection.v1alpha.ServerReflectionRequest
 import grpc.reflection.v1alpha.ServerReflectionResponse
 import grpc.reflection.v1alpha.ServiceResponse
+import okio.FileSystem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

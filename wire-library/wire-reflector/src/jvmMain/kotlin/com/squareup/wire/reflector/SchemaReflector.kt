@@ -33,20 +33,22 @@ import okio.ByteString
 class SchemaReflector(
   private val schema: Schema
 ) {
-  fun process(request: ServerReflectionRequest): ServerReflectionResponse = when {
-    request.list_services != null -> listServices()
-    request.file_by_filename != null -> fileByFilename(request)
-    request.file_containing_symbol != null -> fileContainingSymbol(request.file_containing_symbol)
-    //TODO: request.file_containing_extension request.all_extension_numbers_of_type
-    else -> {
-      ServerReflectionResponse(
-        original_request = request,
-        error_response = ErrorResponse(
-          error_code = GrpcStatus.INVALID_ARGUMENT.code,
-          "unsupported request"
+  fun process(request: ServerReflectionRequest): ServerReflectionResponse {
+    val response = when {
+      request.list_services != null -> listServices()
+      request.file_by_filename != null -> fileByFilename(request)
+      request.file_containing_symbol != null -> fileContainingSymbol(request.file_containing_symbol)
+      //TODO: request.file_containing_extension request.all_extension_numbers_of_type
+      else -> {
+        ServerReflectionResponse(
+          error_response = ErrorResponse(
+            error_code = GrpcStatus.INVALID_ARGUMENT.code,
+            "unsupported request"
+          )
         )
-      )
+      }
     }
+    return response.copy(original_request = request)
   }
 
   private fun listServices(): ServerReflectionResponse {
@@ -64,7 +66,7 @@ class SchemaReflector(
 
     return ServerReflectionResponse(
       list_services_response = ListServiceResponse(
-        service = allServiceNames
+        service = allServiceNames.sortedBy { it.name }
       )
     )
   }
